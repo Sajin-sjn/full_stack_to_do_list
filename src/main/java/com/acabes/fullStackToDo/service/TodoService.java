@@ -37,17 +37,17 @@ public class TodoService {
 
 
 
-//    public Todo updateTodo(String todoId, String userId, TodoDTO todoDTO) {
-//        Todo todo = todoRepository.findById(todoId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Todo not found with id: " + todoId));
-//        if (!todo.getUserId().equals(userId)) {
-//            throw new BadRequestException("Unauthorized to update this todo");
-//        }
-//        todo.setTitle(todoDTO.getTitle());
-//        todo.setDescription(todoDTO.getDescription());
-//        todo.setCompleted(todoDTO.isCompleted());
-//        return todoRepository.save(todo);
-//    }
+    public Todo updateTodo(String todoId, String userId, TodoDTO todoDTO) {
+        Todo todo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new BadRequestExceptions("Todo not found with id: " + todoId));
+        if (!todo.getUserId().equals(userId)) {
+            throw new BadRequestExceptions("Unauthorized to update this todo");
+        }
+        todo.setTitle(todoDTO.getTitle());
+        todo.setDescription(todoDTO.getDescription());
+        todo.setCompleted(todoDTO.isCompleted());
+        return todoRepository.save(todo);
+    }
 //
     public void deleteTodo(String todoId, String userId) {
         Todo todo = todoRepository.findById(todoId)

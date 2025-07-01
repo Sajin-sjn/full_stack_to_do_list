@@ -52,12 +52,38 @@ public class TodoController {
     }
 
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<Todo> updateTodo(@PathVariable String id, @RequestParam String userId, @Valid @RequestBody TodoDTO todoDTO) {
-//        Todo updatedTodo = todoService.updateTodo(id, userId, todoDTO);
-//        return ResponseEntity.ok(updatedTodo);
-//    }
-//
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<Todo>> updateTodo(
+            @PathVariable String id,
+            @RequestParam String userId,
+            @Valid @RequestBody TodoDTO todoDTO) {
+        try {
+            Todo updatedTodo = todoService.updateTodo(id, userId, todoDTO);
+
+            ApiResponse<Todo> response = new ApiResponse<>();
+            response.setSuccess(true);
+            response.setMessage("Todo updated successfully");
+            response.setData(updatedTodo);
+
+            return ResponseEntity.ok(response);
+        } catch (BadRequestExceptions e) {
+            ApiResponse<Todo> errorResponse = new ApiResponse<>();
+            errorResponse.setSuccess(false);
+            errorResponse.setMessage(e.getMessage());
+            errorResponse.setData(null);
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        } catch (Exception e) {
+            ApiResponse<Todo> errorResponse = new ApiResponse<>();
+            errorResponse.setSuccess(false);
+            errorResponse.setMessage("An unexpected error occurred");
+            errorResponse.setData(null);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteTodo(@PathVariable String id, @RequestParam String userId) {
         try {
