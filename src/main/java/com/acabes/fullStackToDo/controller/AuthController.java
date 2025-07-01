@@ -1,10 +1,7 @@
 package com.acabes.fullStackToDo.controller;
 
 
-import com.acabes.fullStackToDo.DTOs.LoginRequestDTO;
-import com.acabes.fullStackToDo.DTOs.LoginResponseDTO;
-import com.acabes.fullStackToDo.DTOs.SignUpResponseDTO;
-import com.acabes.fullStackToDo.DTOs.UserDTO;
+import com.acabes.fullStackToDo.DTOs.*;
 import com.acabes.fullStackToDo.exception.BadRequestExceptions;
 import com.acabes.fullStackToDo.service.UserService;
 import jakarta.validation.Valid;
@@ -27,29 +24,33 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Map<String, Object>> signup(@Valid @RequestBody UserDTO userDTO) {
-        SignUpResponseDTO user = userService.registerUser(userDTO);
+    public ResponseEntity<ApiResponse<SignUpResponseDTO>> signup(@Valid @RequestBody UserDTO userDTO) {
         try {
             SignUpResponseDTO responseDTO = userService.registerUser(userDTO);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(Map.of("message", "User registered successfully", "data", responseDTO, "success", true));
+            ApiResponse<SignUpResponseDTO> apiResponse = new ApiResponse<>(true, "User registered successfully", responseDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
         } catch (BadRequestExceptions e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body( Map.of("message", e.getMessage(),"success", false));
+            ApiResponse<SignUpResponseDTO> apiResponse = new ApiResponse<>(false, e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "An unexpected error occurred","success", false));
+            ApiResponse<SignUpResponseDTO> apiResponse = new ApiResponse<>(false, "An unexpected error occurred", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
-        LoginResponseDTO response = userService.loginUser(loginRequestDTO);
-        Map<String, Object> responseMap = Map.of(
-                "data", response,
-                "success", true
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseMap);
-    }
 
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginResponseDTO>> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
+        try {
+            LoginResponseDTO response = userService.loginUser(loginRequestDTO);
+            ApiResponse<LoginResponseDTO> apiResponse = new ApiResponse<>(true, "Login successful", response);
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        } catch (BadRequestExceptions e) {
+            ApiResponse<LoginResponseDTO> apiResponse = new ApiResponse<>(false, e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        } catch (Exception e) {
+            ApiResponse<LoginResponseDTO> apiResponse = new ApiResponse<>(false, "An unexpected error occurred", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+        }
+    }
 }
