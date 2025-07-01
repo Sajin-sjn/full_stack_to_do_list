@@ -5,6 +5,7 @@ import com.acabes.fullStackToDo.DTOs.TodoDTO;
 import com.acabes.fullStackToDo.exception.BadRequestExceptions;
 import com.acabes.fullStackToDo.model.Todo;
 import com.acabes.fullStackToDo.service.TodoService;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,9 +58,20 @@ public class TodoController {
 //        return ResponseEntity.ok(updatedTodo);
 //    }
 //
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteTodo(@PathVariable String id, @RequestParam String userId) {
-//        todoService.deleteTodo(id, userId);
-//        return ResponseEntity.noContent().build();
-//    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteTodo(@PathVariable String id, @RequestParam String userId) {
+        try {
+            System.out.println("///////////////////////////////");
+            todoService.deleteTodo(id, userId);
+            ApiResponse<String> response = new ApiResponse<>(true, "Todo deleted successfully", null);
+            return ResponseEntity.ok(response);
+        } catch (BadRequestExceptions e) {
+            ApiResponse<String> response = new ApiResponse<>(false, e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            ApiResponse<String> response = new ApiResponse<>(false, "An unexpected error occurred", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 }

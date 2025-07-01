@@ -49,12 +49,13 @@ public class TodoService {
 //        return todoRepository.save(todo);
 //    }
 //
-//    public void deleteTodo(String todoId, String userId) {
-//        Todo todo = todoRepository.findById(todoId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Todo not found with id: " + todoId));
-//        if (!todo.getUserId().equals(userId)) {
-//            throw new BadRequestException("Unauthorized to delete this todo");
-//        }
-//        todoRepository.deleteById(todoId);
-//    }
+    public void deleteTodo(String todoId, String userId) {
+        Todo todo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new BadRequestExceptions("Todo not found with id: " + todoId));
+        if (!todo.getUserId().equals(userId)) {
+            throw new BadRequestExceptions("Unauthorized to delete this todo");
+        }
+        todoRepository.deleteById(todoId);
+    }
+
 }
