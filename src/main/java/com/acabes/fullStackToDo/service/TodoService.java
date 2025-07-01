@@ -19,14 +19,14 @@ public class TodoService {
     @Autowired
     private UserRepository userRepository;
 
-//    public Todo createTodo(String userId, TodoDTO todoDTO) {
-//        Todo todo = new Todo();
-//        todo.setUserId(userId);
-//        todo.setTitle(todoDTO.getTitle());
-//        todo.setDescription(todoDTO.getDescription());
-//        todo.setCompleted(todoDTO.isCompleted());
-//        return todoRepository.save(todo);
-//    }
+    public Todo createTodo(String userId, TodoDTO todoDTO) {
+        Todo todo = new Todo();
+        todo.setUserId(userId);
+        todo.setTitle(todoDTO.getTitle());
+        todo.setDescription(todoDTO.getDescription());
+        todo.setCompleted(todoDTO.isCompleted());
+        return todoRepository.save(todo);
+    }
 
     public List<Todo> getTodosByUserId(String userId) {
         if (!userRepository.existsById(userId)) {

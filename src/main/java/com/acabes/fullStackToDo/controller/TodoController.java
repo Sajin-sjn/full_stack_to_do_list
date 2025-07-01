@@ -20,11 +20,20 @@ public class TodoController {
     @Autowired
     private TodoService todoService;
 
-//    @PostMapping
-//    public ResponseEntity<Todo> createTodo(@RequestParam String userId, @Valid @RequestBody TodoDTO todoDTO) {
-//        Todo todo = todoService.createTodo(userId, todoDTO);
-//        return ResponseEntity.ok(todo);
-//    }
+    @PostMapping
+    public ResponseEntity<ApiResponse<Todo>> createTodo(@RequestParam String userId, @Valid @RequestBody TodoDTO todoDTO) {
+        try {
+            Todo todo = todoService.createTodo(userId, todoDTO);
+            ApiResponse<Todo> apiResponse = new ApiResponse<>(true, "Todo created successfully", todo);
+            return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+        } catch (BadRequestExceptions e) {
+            ApiResponse<Todo> apiResponse = new ApiResponse<>(false, e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+        } catch (Exception e) {
+            ApiResponse<Todo> apiResponse = new ApiResponse<>(false, "An unexpected error occurred", null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+        }
+    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<Todo>>> getTodos(@RequestParam String userId) {
